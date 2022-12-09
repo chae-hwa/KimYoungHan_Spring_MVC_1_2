@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class BasicItemController {
         return "basic/addForm";
     }
 
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV1(@RequestParam String itemName, @RequestParam int price,
                             @RequestParam Integer quantity, Model model) {
         Item item = new Item();
@@ -52,9 +53,18 @@ public class BasicItemController {
 //    @PostMapping("/add")
     public String addItemV2(@ModelAttribute("item") Item item) {
         itemRepository.save(item);
-//        model.addAttribute("item", item); ModelAttribute -> 요청 파라미터를 처리해주고 view에 담아주는 역할을 한다.
+//        model.addAttribute("item", item); ModelAttribute -> 요청 파라미터를 처리해주고 view에 담아주는 역할을 한다.₩
 
         return "basic/item";
+    }
+
+    @PostMapping("/add")
+    public String addItemV3(@ModelAttribute("item") Item item, RedirectAttributes redirectAttributes) {
+        Item saveItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", saveItem.getId());
+        redirectAttributes.addAttribute("status", true);
+
+        return "redirect:/basic/items/{itemId}";
     }
 
     // 수정 폼
